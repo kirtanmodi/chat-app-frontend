@@ -130,6 +130,7 @@ function ChatApp() {
             }
         );
 
+        setMessages([])
         setConnected(false)
         window.location.reload()
     }
