@@ -11,34 +11,25 @@ function ChatApp() {
     const [connected, setConnected] = useState(false)
 
 
-    // get browser notification permission if not already granted
-    useEffect(() => {
-        Notification.requestPermission();
-    }, []);
-
-    if (Notification.permission === 'granted') {
-        console.log('Notifications are allowed');
-    } else if (Notification.permission === 'denied') {
-        console.log('Notifications are denied');
-    } else {
-        console.log('Notifications are not allowed or denied yet');
-    }
+    // useEffect(() => {
+    //     if (Notification && Notification.permission !== 'granted')
+    //         Notification.requestPermission();
+    // }, []);
 
 
-    //if notifcation permission is granted, and user is not on the tab, and new message is received, show notification
-    useEffect(() => {
-        if (Notification.permission === 'granted') {
-            document.addEventListener('visibilitychange', function () {
-                if (document.visibilityState === 'hidden') {
-                    if (messages.length > 0) {
-                        let lastMessage = messages[messages.length - 1]
-                        new Notification(lastMessage._source.userName + ': ' + lastMessage._source.text);
-                    }
-                }
-            });
-        }
+    // useEffect(() => {
+    //     if (Notification && Notification.permission === 'granted') {
+    //         document.addEventListener('visibilitychange', function () {
+    //             if (document.visibilityState === 'hidden') {
+    //                 if (messages.length > 0) {
+    //                     let lastMessage = messages[messages.length - 1]
+    //                     new Notification(lastMessage._source.userName + ': ' + lastMessage._source.text);
+    //                 }
+    //             }
+    //         });
+    //     }
 
-    }, [messages]);
+    // }, [messages]);
 
 
     const connect = async (e) => {
