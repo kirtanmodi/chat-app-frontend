@@ -14,30 +14,30 @@ function ChatApp() {
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
-    const [timer, setTimer] = useState(120)
+    // const [timer, setTimer] = useState(120)
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        let interval = null;
+    //     let interval = null;
 
-        const startTimer = async () => {
+    //     const startTimer = async () => {
 
-            interval = setInterval(() => {
-                setTimer(timer => timer - 1)
-            }
-                , 1000);
+    //         interval = setInterval(() => {
+    //             setTimer(timer => timer - 1)
+    //         }
+    //             , 1000);
 
-        }
-        startTimer()
-        if (timer === 0) {
-            clearInterval(interval)
-            setTimer(60)
-            startTimer()
-            deleteAllMessages()
-        }
+    //     }
+    //     startTimer()
+    //     if (timer === 0) {
+    //         clearInterval(interval)
+    //         setTimer(60)
+    //         startTimer()
+    //         deleteAllMessages()
+    //     }
 
-        return () => clearInterval(interval);
-    }, [timer]);
+    //     return () => clearInterval(interval);
+    // }, [timer]);
 
 
 
@@ -117,12 +117,12 @@ function ChatApp() {
 
     const sendMessage = async (e) => {
 
-        console.log('message sent')
-        e.preventDefault()
-
         if (newMessage === "") {
             return
         }
+
+        console.log('message sent')
+        e.preventDefault()
 
         await Kuzzle.document.create(
             'chat',
@@ -221,7 +221,7 @@ function ChatApp() {
                         <h1>Welcome to the Chat Room</h1>
                     </div>
 
-                    <div
+                    {/* <div
                         style={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -234,7 +234,7 @@ function ChatApp() {
 
                     >
                         <p>all messages will delete in {timer}s</p>
-                    </div>
+                    </div> */}
 
 
                     <div class="messages-list-container"
@@ -264,12 +264,12 @@ function ChatApp() {
                             <button type="submit">Send</button>
                         </div>
                     </div>
-                    {/* 
+
                     <div class="message-form-container">
                         <div class="message-form">
                             <button onClick={deleteAllMessages} type="submit">delete messages</button>
                         </div>
-                    </div> */}
+                    </div>
 
                 </form>
                 {showEmojiPicker &&
