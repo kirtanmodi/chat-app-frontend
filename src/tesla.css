@@ -162,6 +162,7 @@ h6 {
   display: flex;
   margin-top: 20px;
   align-items: center;
+  gap: 10px;
 }
 
 .message-form input[type="text"] {

@@ -1,6 +1,8 @@
+import EmojiPicker from 'emoji-picker-react';
 import React, { useEffect, useState } from 'react';
 import Kuzzle from '../services/Kuzzle';
-import "../tesla.css"
+import "../tesla.css";
+
 
 
 function ChatApp() {
@@ -9,6 +11,34 @@ function ChatApp() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [connected, setConnected] = useState(false)
+
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+
+    const [timer, setTimer] = useState(120)
+
+    useEffect(() => {
+
+        let interval = null;
+
+        const startTimer = async () => {
+
+            interval = setInterval(() => {
+                setTimer(timer => timer - 1)
+            }
+                , 1000);
+
+        }
+        startTimer()
+        if (timer === 0) {
+            clearInterval(interval)
+            setTimer(60)
+            startTimer()
+            deleteAllMessages()
+        }
+
+        return () => clearInterval(interval);
+    }, [timer]);
+
 
 
     // useEffect(() => {
@@ -131,8 +161,8 @@ function ChatApp() {
         );
 
         setMessages([])
-        setConnected(false)
-        window.location.reload()
+        // setConnected(false)
+        // window.location.reload()
     }
 
     // deleteAllMessages()
@@ -190,6 +220,23 @@ function ChatApp() {
                     <div class="messages-header">
                         <h1>Welcome to the Chat Room</h1>
                     </div>
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '50px',
+                            fontSize: '2rem',
+                            fontWeight: 'bold',
+                            color: timer > 10 ? 'green' : 'red',
+                        }}
+
+                    >
+                        <p>all messages will delete in {timer}s</p>
+                    </div>
+
+
                     <div class="messages-list-container"
                         style={{
                             overflow: "auto",
@@ -205,19 +252,42 @@ function ChatApp() {
                             <input
                                 autoFocus
                                 type="text" value={newMessage} onChange={handleChange} placeholder="Type your message here" />
+
+                            <button
+                                type='button'
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            >
+                                <span role="img" aria-label="emoji">😀</span>
+                            </button>
+
+
                             <button type="submit">Send</button>
                         </div>
                     </div>
-
+                    {/* 
                     <div class="message-form-container">
                         <div class="message-form">
                             <button onClick={deleteAllMessages} type="submit">delete messages</button>
                         </div>
-                    </div>
-
-
+                    </div> */}
 
                 </form>
+                {showEmojiPicker &&
+                    <div
+                        style={{
+                            position: 'absolute',
+                            bottom: '50px',
+                            right: '50px',
+                        }}
+                    >
+                        <EmojiPicker
+                            onEmojiClick={(event, emojiObject) => {
+                                setNewMessage(newMessage + event?.emoji)
+                            }
+                            }
+                        />
+                    </div >
+                }
             </div>
 
         </>
