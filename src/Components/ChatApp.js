@@ -2,10 +2,13 @@ import EmojiPicker from 'emoji-picker-react';
 import React, { useEffect, useState } from 'react';
 import Kuzzle from '../services/Kuzzle';
 import "../tesla.css";
+import ReactGiphySearchbox from 'react-giphy-searchbox'
 
 
 
 function ChatApp() {
+
+    const apiKey = process.env.REACT_APP_GIPHY_API_KEY;
 
     const [userName, setUserName] = useState('')
     const [messages, setMessages] = useState([]);
@@ -13,6 +16,7 @@ function ChatApp() {
     const [connected, setConnected] = useState(false)
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [showGiphy, setShowGiphy] = useState(false)
 
 
     useEffect(() => {
@@ -30,6 +34,8 @@ function ChatApp() {
 
     }, [messages]);
 
+
+    // Kuzzle functions
 
     const connect = async (e) => {
         e.preventDefault()
@@ -84,7 +90,20 @@ function ChatApp() {
         );
     }
 
-    const sendMessage = async (e) => {
+    const sendMessage = async (e, url = null) => {
+
+
+        if (url) {
+            return await Kuzzle.document.create(
+                'chat',
+                'messages',
+                {
+                    text: url,
+                    userName: userName,
+                    timestamp: Date.now(),
+                },
+            );
+        }
 
         if (newMessage === "") {
             return
@@ -116,8 +135,6 @@ function ChatApp() {
 
 
     const deleteAllMessages = async () => {
-
-
         await Kuzzle.document.deleteByQuery(
             'chat',
             'messages',
@@ -127,10 +144,28 @@ function ChatApp() {
                 }
             }
         );
-
         setMessages([])
     }
 
+
+
+    // giphy functions
+
+    function isValidHttpUrl(string) {
+        let url;
+
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
+
+
+
+    // components
 
     const getUserName = () => {
         return <>
@@ -158,16 +193,28 @@ function ChatApp() {
 
 
     const getMessages = () => {
-
         return <>
-            {messages.map((message, index) => (
-                <li key={index} class="message-item">
-                    <div class="message-info">
-                        <span class="message-username">{message._source.userName}: </span>
+            {messages.map((message, index) => {
+                return <li key={index} className="message-item">
+                    <div className="message-info">
+                        <span className="message-username">{message._source.userName}: </span>
                     </div>
-                    <div class="message-text">{message._source.text}</div>
+
+                    <div>
+                        {isValidHttpUrl(message._source.text) ?
+                            <img
+                                className="message-image"
+                                src={message._source.text}
+                                alt="message"
+                            />
+                            :
+                            <div className="message-text">{message._source.text}</div>
+                        }
+                    </div>
+
                 </li>
-            ))}
+            }
+            )}
         </>
 
     }
@@ -176,31 +223,31 @@ function ChatApp() {
     const getChat = () => {
         return <>
             <div
-                class="messages-container"
-
+                className="messages-container"
             >
                 <form onSubmit={sendMessage}>
-                    <div class="messages-header">
+                    <div className="messages-header">
                         <h1>Welcome to the Chat Room</h1>
                     </div>
 
 
-                    <div class="messages-list-container"
+                    <div className="messages-list-container"
                         style={{
                             overflow: "auto",
                             maxHeight: window.innerHeight - 300,
                         }}
                     >
-                        <ul class="message-list">
+                        <ul className="message-list">
                             {getMessages()}
                         </ul>
                     </div>
-                    <div class="message-form-container">
-                        <div class="message-form">
+                    <div className="message-form-container">
+                        <div className="message-form">
                             <input
                                 autoFocus
                                 type="text" value={newMessage} onChange={handleChange} placeholder="Type your message here" />
 
+                            {/* emoji button */}
                             <button
                                 type='button'
                                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -208,18 +255,49 @@ function ChatApp() {
                                 <span role="img" aria-label="emoji">😀</span>
                             </button>
 
+                            {/* giphy button */}
+                            <button
+                                type='button'
+                                onClick={() => setShowGiphy(!showGiphy)}
+                            >
+                                <span role="img" aria-label="giphy">🐱</span>
+                            </button>
+
 
                             <button type="submit">Send</button>
                         </div>
                     </div>
 
-                    <div class="message-form-container">
-                        <div class="message-form">
+                    <div className="message-form-container">
+                        <div className="message-form">
                             <button onClick={deleteAllMessages} type="submit">delete messages</button>
                         </div>
                     </div>
 
                 </form>
+
+                {
+                    showGiphy &&
+                    <div
+                        style={{
+                            position: 'absolute',
+                            bottom: '50px',
+                            right: '50px',
+                        }}
+                    >
+
+                        <ReactGiphySearchbox
+                            apiKey={apiKey} // Required: get your on https://developers.giphy.com
+                            onSelect={item => {
+                                sendMessage(null, item?.images.downsized.url)
+                            }}
+                        />
+
+
+                    </div>
+                }
+
+
                 {showEmojiPicker &&
                     <div
                         style={{

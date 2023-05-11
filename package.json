@@ -10,6 +10,7 @@
     "kuzzle-sdk": "^7.10.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-giphy-searchbox": "^1.5.4",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
