@@ -14,52 +14,21 @@ function ChatApp() {
 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
-    // const [timer, setTimer] = useState(120)
 
-    // useEffect(() => {
-
-    //     let interval = null;
-
-    //     const startTimer = async () => {
-
-    //         interval = setInterval(() => {
-    //             setTimer(timer => timer - 1)
-    //         }
-    //             , 1000);
-
-    //     }
-    //     startTimer()
-    //     if (timer === 0) {
-    //         clearInterval(interval)
-    //         setTimer(60)
-    //         startTimer()
-    //         deleteAllMessages()
-    //     }
-
-    //     return () => clearInterval(interval);
-    // }, [timer]);
+    useEffect(() => {
+        if (Notification && Notification.permission !== 'granted')
+            Notification.requestPermission();
+    }, []);
 
 
+    useEffect(() => {
 
-    // useEffect(() => {
-    //     if (Notification && Notification.permission !== 'granted')
-    //         Notification.requestPermission();
-    // }, []);
+        if (messages.length > 0 && window.document.visibilityState === 'hidden') {
+            let lastMessage = messages[messages.length - 1]
+            new Notification(lastMessage._source.userName + ': ' + lastMessage._source.text);
+        }
 
-
-    // useEffect(() => {
-    //     if (Notification && Notification.permission === 'granted') {
-    //         document.addEventListener('visibilitychange', function () {
-    //             if (document.visibilityState === 'hidden') {
-    //                 if (messages.length > 0) {
-    //                     let lastMessage = messages[messages.length - 1]
-    //                     new Notification(lastMessage._source.userName + ': ' + lastMessage._source.text);
-    //                 }
-    //             }
-    //         });
-    //     }
-
-    // }, [messages]);
+    }, [messages]);
 
 
     const connect = async (e) => {
@@ -145,7 +114,6 @@ function ChatApp() {
         setNewMessage(value);
     };
 
-    // console.log(messages);
 
     const deleteAllMessages = async () => {
 
@@ -161,11 +129,7 @@ function ChatApp() {
         );
 
         setMessages([])
-        // setConnected(false)
-        // window.location.reload()
     }
-
-    // deleteAllMessages()
 
 
     const getUserName = () => {
@@ -195,7 +159,6 @@ function ChatApp() {
 
     const getMessages = () => {
 
-        //reverse the message list 
         return <>
             {messages.map((message, index) => (
                 <li key={index} class="message-item">
@@ -220,21 +183,6 @@ function ChatApp() {
                     <div class="messages-header">
                         <h1>Welcome to the Chat Room</h1>
                     </div>
-
-                    {/* <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            height: '50px',
-                            fontSize: '2rem',
-                            fontWeight: 'bold',
-                            color: timer > 10 ? 'green' : 'red',
-                        }}
-
-                    >
-                        <p>all messages will delete in {timer}s</p>
-                    </div> */}
 
 
                     <div class="messages-list-container"
@@ -293,7 +241,6 @@ function ChatApp() {
         </>
     }
 
-    // console.log(messages);
 
     return (
         <div
