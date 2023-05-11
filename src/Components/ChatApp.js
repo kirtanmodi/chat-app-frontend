@@ -18,6 +18,8 @@ function ChatApp() {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [showGiphy, setShowGiphy] = useState(false)
 
+    const latestMessageRef = React.useRef(null);
+
 
     useEffect(() => {
         if (Notification && Notification.permission !== 'granted')
@@ -36,7 +38,6 @@ function ChatApp() {
 
 
     // Kuzzle functions
-
     const connect = async (e) => {
         e.preventDefault()
         if (userName === "") {
@@ -150,7 +151,6 @@ function ChatApp() {
 
 
     // giphy functions
-
     function isValidHttpUrl(string) {
         let url;
 
@@ -163,6 +163,16 @@ function ChatApp() {
         return url.protocol === "http:" || url.protocol === "https:";
     }
 
+
+
+    // scroll to the latest message
+    useEffect(() => {
+        if (latestMessageRef.current) {
+            latestMessageRef.current.scrollIntoView({
+                behavior: 'smooth',
+            });
+        }
+    }, [messages]);
 
 
     // components
@@ -200,6 +210,7 @@ function ChatApp() {
                         <span className="message-username">{message._source.userName}: </span>
                     </div>
 
+
                     <div>
                         {isValidHttpUrl(message._source.text) ?
                             <img
@@ -208,9 +219,16 @@ function ChatApp() {
                                 alt="message"
                             />
                             :
-                            <div className="message-text">{message._source.text}</div>
+                            <div
+                                style={{
+                                    wordBreak: 'break-all',
+                                }}
+                                className="message-text">{message._source.text}</div>
                         }
                     </div>
+
+
+
 
                 </li>
             }
@@ -235,11 +253,13 @@ function ChatApp() {
                         style={{
                             overflow: "auto",
                             maxHeight: window.innerHeight - 300,
+                            maxWidth: window.innerWidth - 1300,
                         }}
                     >
                         <ul className="message-list">
                             {getMessages()}
                         </ul>
+                        <div ref={latestMessageRef} />
                     </div>
                     <div className="message-form-container">
                         <div className="message-form">
@@ -250,7 +270,10 @@ function ChatApp() {
                             {/* emoji button */}
                             <button
                                 type='button'
-                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                onClick={() => {
+                                    setShowGiphy(false)
+                                    setShowEmojiPicker(!showEmojiPicker)
+                                }}
                             >
                                 <span role="img" aria-label="emoji">😀</span>
                             </button>
@@ -258,7 +281,10 @@ function ChatApp() {
                             {/* giphy button */}
                             <button
                                 type='button'
-                                onClick={() => setShowGiphy(!showGiphy)}
+                                onClick={() => {
+                                    setShowEmojiPicker(false)
+                                    setShowGiphy(!showGiphy)
+                                }}
                             >
                                 <span role="img" aria-label="giphy">🐱</span>
                             </button>
@@ -321,20 +347,21 @@ function ChatApp() {
 
 
     return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '1rem',
-                height: '100vh',
-            }}
-        >
+        <>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '1rem',
+                    height: '100vh',
+                }}
+            >
+                {!connected ? getUserName() : getChat()}
+            </div>
+        </>
 
-            {!connected ? getUserName() : getChat()}
-
-        </div>
     );
 }
 
